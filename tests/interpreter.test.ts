@@ -41,4 +41,24 @@ describe('run', () => {
         `);
         expect(stdout).toMatch(/"[\\0-9A-Z]+" :\s+async<\$top-level> Blob/);
     });
+
+    test('Random.blob() returns valid blob object', () => {
+        const { stdout, stderr, result } = testMotoko(`
+            import Random "mo:base/Random";
+            import Blob "mo:base/Blob";
+            Random.blob()
+        `);
+        expect(result.error).toBeNull();
+        expect(stdout).toMatch(/"[\\0-9A-Z]+" :\s+async<\$top-level> Blob/);
+        expect(stderr).toBe('');
+    });
+
+    test('Division by zero returns arithmetic overflow', () => {
+        const { stdout, stderr, result } = testMotoko(`
+            1 / 0
+        `);
+        expect(result.error).not.toBeNull();
+        expect(stderr).toContain('execution error, arithmetic overflow');
+        expect(stdout).toBe('');
+    });
 });
